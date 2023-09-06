@@ -14,10 +14,8 @@ class SignInScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.person_search),
-        onPressed: () {
-          ref.watch(authProvider).changeText();
-        },
+        child: const Icon(Icons.person_search),
+        onPressed: () {},
       ),
       body: Center(
           child: ElevatedButton.icon(
@@ -27,8 +25,8 @@ class SignInScreen extends ConsumerWidget {
                 'google-logo.png',
                 width: 20,
               ),
-              label: Text(
-                ref.watch(authProvider).text,
+              label: const Text(
+                'sign in with google',
                 style: TextStyle(color: Colors.black),
               ))),
     );
