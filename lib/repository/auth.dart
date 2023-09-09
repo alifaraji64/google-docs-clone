@@ -8,6 +8,7 @@ import 'package:google_docs_clone/models/error.dart';
 import 'package:google_docs_clone/models/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -42,16 +43,19 @@ class Auth extends ChangeNotifier {
           },
         );
         if (res.statusCode == 200) {
-          newUser = newUser.copyWith(uid: jsonDecode(res.body)['_id']);
+          newUser = newUser.copyWith(
+            uid: jsonDecode(res.body)['user']['_id'],
+            token: jsonDecode(res.body)['jwt'],
+          );
           userProvider = newUser;
-        } else if (res.statusCode == 409) {
-          print(jsonDecode(res.body)['message']);
-          error = ErrorModel(
-              isError: true, message: jsonDecode(res.body)['message']);
-        } else {
-          error = ErrorModel(
-              isError: true, message: 'unknown error occured while signing up');
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          preferences.setString(
+            'jwt',
+            userProvider.token,
+          );
+          return error;
         }
+        error = handleResponseError(res: res, error: error);
       }
     } catch (e) {
       error = ErrorModel(
@@ -60,6 +64,34 @@ class Auth extends ChangeNotifier {
     }
     print(error);
     return error;
+  }
+
+  Future getUserData() async {
+    ErrorModel error = ErrorModel(isError: false, message: '');
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final String? jwt = preferences.getString('jwt');
+      if (jwt!.isEmpty) {
+        error = ErrorModel(
+          isError: true,
+          message: 'jwt is empty is shared preferences',
+        );
+        return error;
+      }
+      http.Response res = await http.get(
+        Uri.parse('$uri/user-data'),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'jwt': jwt
+        },
+      );
+    } catch (e) {
+      error = ErrorModel(
+          isError: true,
+          message: 'unkown error occured while getting the user data');
+    }
   }
 }
 

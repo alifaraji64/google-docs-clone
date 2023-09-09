@@ -1,8 +1,9 @@
-const { Router } = require('express')
-const router = Router()
+import { Router } from 'express'
 
-const AuthController = require('./controllers/auth.controller.js')
+export const router = Router()
+
+import {AuthController} from './controllers/auth.controller.js'
+import {authMiddleware} from './middlewares/auth.js'
 
 router.post('/signup', AuthController.signup)
-
-module.exports = router
+router.get('/user-data', authMiddleware, AuthController.userData)

@@ -1,11 +1,11 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-const router = require('./routes')
-const cors = require('cors');
+import express from 'express'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+import {router} from './routes.js'
+import cors from 'cors'
 const app = express()
 
-app.use(cors());
+app.use(cors())
 app.use(express.json())
 app.use(router)
 

@@ -1,6 +1,7 @@
-const User = require('../models/User')
+import { User } from '../models/User.js'
+import jwt from 'jsonwebtoken'
 
-class AuthController {
+export class AuthController {
   static async signup (req, res) {
     console.log('sign up')
     try {
@@ -12,12 +13,18 @@ class AuthController {
       //user doesn't exist on database we can register
       let newUser = new User({ email, name, photoURL })
       newUser = await newUser.save()
-      res.json(newUser)
+      let token = jwt.sign({ id: newUser._id }, 'jwtKey')
+      res.json({ user: newUser, jwt: token })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: error })
     }
   }
-}
 
-module.exports = AuthController
+  static async userData (req, res) {
+    try {
+      let user = await User.findById(req.id)
+      return res.json({ user, token: req.token })
+    } catch (error) {}
+  }
+}
