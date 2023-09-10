@@ -26,12 +26,10 @@ class Auth extends ChangeNotifier {
       print(user);
       if (user != null) {
         User newUser = User(
-          email: user.email,
-          name: user.displayName!,
-          photoURL: user.photoUrl!,
-          uid: '',
-          token: '',
-        );
+            email: user.email,
+            name: user.displayName!,
+            photoURL: user.photoUrl!,
+            uid: '');
 
         http.Response res = await http.post(
           Uri.parse('$uri/signup'),
@@ -45,15 +43,13 @@ class Auth extends ChangeNotifier {
         if (res.statusCode == 200) {
           newUser = newUser.copyWith(
             uid: jsonDecode(res.body)['user']['_id'],
-            token: jsonDecode(res.body)['jwt'],
           );
           userProvider = newUser;
           SharedPreferences preferences = await SharedPreferences.getInstance();
           preferences.setString(
             'jwt',
-            userProvider.token,
+            jsonDecode(res.body)['jwt'],
           );
-          return error;
         }
         error = handleResponseError(res: res, error: error);
       }
@@ -66,12 +62,12 @@ class Auth extends ChangeNotifier {
     return error;
   }
 
-  Future getUserData() async {
+  Future<ErrorModel> getUserData() async {
     ErrorModel error = ErrorModel(isError: false, message: '');
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       final String? jwt = preferences.getString('jwt');
-      if (jwt!.isEmpty) {
+      if (jwt != null || jwt!.isEmpty) {
         error = ErrorModel(
           isError: true,
           message: 'jwt is empty is shared preferences',
@@ -87,11 +83,25 @@ class Auth extends ChangeNotifier {
           'jwt': jwt
         },
       );
+      if (res.statusCode == 200) {
+        final user = User.fromJson(jsonEncode(jsonDecode(res.body)['user']));
+        print(user);
+        error = ErrorModel(isError: false, message: '', data: user);
+      }
+      error = handleResponseError(res: res, error: error);
     } catch (e) {
+      print('ang');
+      print(e);
       error = ErrorModel(
           isError: true,
           message: 'unkown error occured while getting the user data');
     }
+    return error;
+  }
+
+  updateUserProvider(User user) {
+    userProvider = user;
+    notifyListeners();
   }
 }
 

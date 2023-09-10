@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 export const authMiddleware = async (req, res, next) => {
   try {
     const jwtFromUser = req.header('jwt')
+    console.log(jwtFromUser);
     if (!jwtFromUser) {
       return res.status(401).json({ message: 'no jwt send from the user' })
     }

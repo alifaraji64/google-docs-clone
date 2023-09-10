@@ -6,13 +6,11 @@ class User {
   final String name;
   final String photoURL;
   final String uid;
-  final String token;
   User({
     required this.email,
     required this.name,
     required this.photoURL,
     required this.uid,
-    required this.token,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,7 +19,6 @@ class User {
       'name': name,
       'photoURL': photoURL,
       'uid': uid,
-      'token': token,
     };
   }
 
@@ -31,7 +28,6 @@ class User {
       name: map['name'] as String,
       photoURL: map['photoURL'] as String,
       uid: map['uid'] as String,
-      token: map['token'] as String,
     );
   }
 
@@ -45,14 +41,11 @@ class User {
     String? name,
     String? photoURL,
     String? uid,
-    String? token,
   }) {
     return User(
-      email: email ?? this.email,
-      name: name ?? this.name,
-      photoURL: photoURL ?? this.photoURL,
-      uid: uid ?? this.uid,
-      token: token ?? this.token,
-    );
+        email: email ?? this.email,
+        name: name ?? this.name,
+        photoURL: photoURL ?? this.photoURL,
+        uid: uid ?? this.uid);
   }
 }

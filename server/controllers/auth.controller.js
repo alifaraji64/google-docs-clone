@@ -14,6 +14,7 @@ export class AuthController {
       let newUser = new User({ email, name, photoURL })
       newUser = await newUser.save()
       let token = jwt.sign({ id: newUser._id }, 'jwtKey')
+      console.log(token);
       res.json({ user: newUser, jwt: token })
     } catch (error) {
       console.log(error)

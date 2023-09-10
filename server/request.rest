@@ -1,8 +1,9 @@
-post http://localhost:8000/signup
+get http://localhost:8000/user-data
 content-type: application/json
+jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZmNiMjUwZDc0NjY2MzQxZGI5MjY0NSIsImlhdCI6MTY5NDI4MjMyMX0.gH3wNROkQ4UEbCr2KR0bzQYA0H8R-feISlqWwzzQcBY
 
-{
-    "email": "test4@gmail.com",
-    "name": "ali",
-    "photoURL": "testUrl.com"
-}
+# {
+#     "email": "test4@gmail.com",
+#     "name": "ali",
+#     "photoURL": "testUrl.com"
+# }
