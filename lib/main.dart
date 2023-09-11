@@ -11,12 +11,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
   final SharedPreferences preferences = await SharedPreferences.getInstance();
-  runApp(ProviderScope(child: MyApp(preferences: preferences)));
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerStatefulWidget {
-  const MyApp({Key? key, required SharedPreferences preferences})
-      : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   ConsumerState<MyApp> createState() => _MyAppState();
@@ -29,29 +28,30 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    getUserData();
+    Timer(Duration.zero, () {
+      getUserData();
+    });
   }
 
   Future<void> getUserData() async {
-    error = await ref.read(authProvider).getUserData();
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    jwt = preferences.getString('jwt');
-    print(error);
-    if (error.data) {
-      ref.read(authProvider).updateUserProvider(error.data);
+    try {
+      error = await ref.read(authProvider).getUserData();
+      print('message: ' + error.message);
+      if (error.data != null) {
+        ref.read(authProvider).updateUserProvider(error.data);
+      }
+    } catch (e) {
+      print('bam');
+      print(e);
     }
-    setState(() {}); // Trigger a rebuild after fetching data
   }
 
   @override
   Widget build(BuildContext context) {
-    if (jwt == null) {
-      // Handle the case where jwt is null, for example, show a loading indicator
-      return const CircularProgressIndicator();
-    } else if (jwt!.isEmpty) {
-      return const HomeScreen();
-    } else {
-      return const SignInScreen();
-    }
+    final user = ref.watch(authProvider).userProvider;
+    print("user $user");
+    return MaterialApp(
+      home: user == null ? const SignInScreen() : const HomeScreen(),
+    );
   }
 }

@@ -11,7 +11,7 @@ class HomeScreen extends ConsumerWidget {
       body: Center(
           child: Text(ref
               .watch(authProvider)
-              .userProvider
+              .userProvider!
               .email
               .isNotEmpty
               .toString())),

@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs_clone/models/error.dart';
 import 'package:google_docs_clone/repository/auth.dart';
 import 'package:google_docs_clone/screens/HomeScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends ConsumerWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({Key? key}) : super(key: key);
 
   signInWithGoogle(WidgetRef ref, BuildContext context) async {
     final sMessanger = ScaffoldMessenger.of(context);
@@ -28,7 +29,11 @@ class SignInScreen extends ConsumerWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.person_search),
-        onPressed: () {},
+        onPressed: () async {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          final String? jwt = preferences.getString('jwt');
+          print(jwt);
+        },
       ),
       body: Center(
           child: ElevatedButton.icon(

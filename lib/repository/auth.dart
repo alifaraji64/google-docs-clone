@@ -14,7 +14,7 @@ import '../constants.dart';
 
 class Auth extends ChangeNotifier {
   final GoogleSignIn _googleSignIn;
-  late User userProvider;
+  User? userProvider;
   Auth({
     required GoogleSignIn googleSignIn,
   }) : _googleSignIn = googleSignIn;
@@ -67,13 +67,14 @@ class Auth extends ChangeNotifier {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       final String? jwt = preferences.getString('jwt');
-      if (jwt != null || jwt!.isEmpty) {
+      if (jwt == null) {
         error = ErrorModel(
           isError: true,
           message: 'jwt is empty is shared preferences',
         );
         return error;
       }
+      print("jwt $jwt");
       http.Response res = await http.get(
         Uri.parse('$uri/user-data'),
         headers: {
@@ -87,11 +88,10 @@ class Auth extends ChangeNotifier {
         final user = User.fromJson(jsonEncode(jsonDecode(res.body)['user']));
         print(user);
         error = ErrorModel(isError: false, message: '', data: user);
+        return error;
       }
       error = handleResponseError(res: res, error: error);
     } catch (e) {
-      print('ang');
-      print(e);
       error = ErrorModel(
           isError: true,
           message: 'unkown error occured while getting the user data');

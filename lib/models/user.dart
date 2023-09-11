@@ -27,7 +27,7 @@ class User {
       email: map['email'] as String,
       name: map['name'] as String,
       photoURL: map['photoURL'] as String,
-      uid: map['uid'] as String,
+      uid: map['_id'] as String,
     );
   }
 
