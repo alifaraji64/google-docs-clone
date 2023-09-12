@@ -6,11 +6,9 @@ import 'package:google_docs_clone/models/error.dart';
 import 'package:google_docs_clone/repository/auth.dart';
 import 'package:google_docs_clone/screens/HomeScreen.dart';
 import 'package:google_docs_clone/screens/signInScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:routemaster/routemaster.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
-  final SharedPreferences preferences = await SharedPreferences.getInstance();
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -49,9 +47,20 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).userProvider;
+    final routes = user == null
+        ? RouteMap(routes: {
+            '/': (route) => const MaterialPage(child: SignInScreen()),
+          })
+        : RouteMap(routes: {
+            '/': (route) => const MaterialPage(child: HomeScreen()),
+          });
     print("user $user");
-    return MaterialApp(
-      home: user == null ? const SignInScreen() : const HomeScreen(),
-    );
+    return MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerDelegate: RoutemasterDelegate(routesBuilder: (context) => routes),
+        routeInformationParser: const RoutemasterParser()
+
+        //home: user == null ? const SignInScreen() : const HomeScreen(),
+        );
   }
 }

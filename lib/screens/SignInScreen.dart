@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs_clone/models/error.dart';
 import 'package:google_docs_clone/repository/auth.dart';
 import 'package:google_docs_clone/screens/HomeScreen.dart';
+import 'package:routemaster/routemaster.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends ConsumerWidget {
@@ -10,7 +11,7 @@ class SignInScreen extends ConsumerWidget {
 
   signInWithGoogle(WidgetRef ref, BuildContext context) async {
     final sMessanger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
+    final navigator = Routemaster.of(context);
 
     ErrorModel error = await ref.read(authProvider).signInWithGoogle();
     print(error.isError);
@@ -20,8 +21,7 @@ class SignInScreen extends ConsumerWidget {
         backgroundColor: Colors.red[600],
       ));
     }
-    return navigator
-        .push(MaterialPageRoute(builder: (context) => const HomeScreen()));
+    return navigator.push('/');
   }
 
   @override

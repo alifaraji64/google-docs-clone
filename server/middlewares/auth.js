@@ -12,7 +12,7 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: 'token verification failed' })
     }
     req.id = verified.id
-    req.jtw = jwtFromUser;
+    req.jwt = jwtFromUser;
     next();
   } catch (error) {
     res.status(500).json({ message: error })

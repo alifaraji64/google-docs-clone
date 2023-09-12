@@ -8,13 +8,27 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Center(
-          child: Text(ref
-              .watch(authProvider)
-              .userProvider!
-              .email
-              .isNotEmpty
-              .toString())),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.add,
+                color: Colors.black,
+              )),
+          IconButton(
+              onPressed: () {
+                ref.read(authProvider).logout();
+              },
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.red,
+              ))
+        ],
+      ),
+      body: Center(child: Text(ref.watch(authProvider).userProvider!.email)),
     );
   }
 }

@@ -44,18 +44,20 @@ class Auth extends ChangeNotifier {
           newUser = newUser.copyWith(
             uid: jsonDecode(res.body)['user']['_id'],
           );
-          userProvider = newUser;
+          updateUserProvider(newUser);
           SharedPreferences preferences = await SharedPreferences.getInstance();
           preferences.setString(
             'jwt',
             jsonDecode(res.body)['jwt'],
           );
+          return error = ErrorModel(isError: false, message: '');
         }
         error = handleResponseError(res: res, error: error);
       }
     } catch (e) {
       error = ErrorModel(
           isError: true, message: 'unknown error occured while signing up');
+      print('fsdf');
       print(e);
     }
     print(error);
@@ -99,7 +101,14 @@ class Auth extends ChangeNotifier {
     return error;
   }
 
-  updateUserProvider(User user) {
+  void logout() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove('jwt');
+    await _googleSignIn.signOut();
+    updateUserProvider(null);
+  }
+
+  updateUserProvider(User? user) {
     userProvider = user;
     notifyListeners();
   }
