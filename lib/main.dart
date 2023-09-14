@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_docs_clone/models/error.dart';
 import 'package:google_docs_clone/repository/auth.dart';
+import 'package:google_docs_clone/screens/DocumentScreen.dart';
 import 'package:google_docs_clone/screens/HomeScreen.dart';
 import 'package:google_docs_clone/screens/signInScreen.dart';
 import 'package:routemaster/routemaster.dart';
@@ -53,6 +54,8 @@ class _MyAppState extends ConsumerState<MyApp> {
           })
         : RouteMap(routes: {
             '/': (route) => const MaterialPage(child: HomeScreen()),
+            '/document/:id': (route) => MaterialPage(
+                child: DocumentScreen(id: route.pathParameters['id'] ?? ''))
           });
     print("user $user");
     return MaterialApp.router(

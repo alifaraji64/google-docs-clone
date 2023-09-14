@@ -9,6 +9,16 @@ export class DoumentController {
         title: 'Untitled Document',
         createdAt
       })
+      await document.save()
+      return res.json(document)
+    } catch (error) {
+      res.status(500).json({ message: e.message })
+    }
+  }
+  static async getDoc (req, res) {
+    try {
+      let documents = await Document.find({ uid: req.id })
+      return res.json(documents);
     } catch (error) {
       res.status(500).json({ message: e.message })
     }

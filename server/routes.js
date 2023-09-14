@@ -9,3 +9,4 @@ import { DoumentController } from './controllers/document.controller.js'
 router.post('/signup', AuthController.signup)
 router.get('/user-data', authMiddleware, AuthController.userData)
 router.post('/create-doc', authMiddleware, DoumentController.createDoc)
+router.get('/get-doc', authMiddleware, DoumentController.getDoc)
