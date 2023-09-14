@@ -18,7 +18,27 @@ export class DoumentController {
   static async getDoc (req, res) {
     try {
       let documents = await Document.find({ uid: req.id })
-      return res.json(documents);
+      return res.json(documents)
+    } catch (error) {
+      res.status(500).json({ message: e.message })
+    }
+  }
+  static async changeTitle (req, res) {
+    const { id, title } = req.body
+    const document = await Document.findByIdAndUpdate(id, { title })
+    try {
+      const { id, title } = req.body
+      const document = await Document.findByIdAndUpdate(id, { title })
+      return res.json(document)
+    } catch (error) {
+      res.status(500).json({ message: e.message })
+    }
+  }
+
+  static async getDocById (req, res) {
+    try {
+      const document = await Document.findById(req.params.id)
+      return res.json(document)
     } catch (error) {
       res.status(500).json({ message: e.message })
     }

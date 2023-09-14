@@ -70,6 +70,70 @@ class Document extends ChangeNotifier {
     }
     return error;
   }
+
+  Future<ErrorModel> updateTitle({
+    required String id,
+    required String title,
+  }) async {
+    ErrorModel error = ErrorModel(isError: false, message: '');
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final String? jwt = preferences.getString('jwt');
+      http.Response res = await http.post(
+        Uri.parse('$uri/change-doc-title'),
+        body: jsonEncode({'id': id, 'title': title}),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'jwt': jwt!
+        },
+      );
+      if (res.statusCode == 200) {
+        return error = ErrorModel(
+            isError: false,
+            message: '',
+            data: DocumentModel.fromJson(res.body));
+      }
+      error = handleResponseError(res: res, error: error);
+    } catch (e) {
+      error = ErrorModel(
+        isError: true,
+        message: 'unkown error occured while saving the document',
+      );
+    }
+    return error;
+  }
+
+  Future<ErrorModel> getDocumentById({required String id}) async {
+    ErrorModel error = ErrorModel(isError: false, message: '');
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final String? jwt = preferences.getString('jwt');
+      http.Response res = await http.get(
+        Uri.parse('$uri/get-doc/$id'),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'jwt': jwt!
+        },
+      );
+      if (res.statusCode == 200) {
+        return error = ErrorModel(
+            isError: false,
+            message: '',
+            data: DocumentModel.fromJson(res.body));
+      }
+      error = handleResponseError(res: res, error: error);
+    } catch (e) {
+      error = ErrorModel(
+        isError: true,
+        message: 'unkown error occured while saving the document',
+      );
+    }
+    return error;
+  }
 }
 
 final documentProvider = ChangeNotifierProvider<Document>((ref) => Document());
