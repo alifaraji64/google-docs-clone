@@ -43,4 +43,13 @@ export class DoumentController {
       res.status(500).json({ message: e.message })
     }
   }
+
+  static async updateContent (data) {
+    try {
+      console.log('updateContent');
+      await Document.findByIdAndUpdate(data.roomId, { content: data.delta })
+    } catch (error) {
+      console.log('error in updateContent' + error)
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
       TextEditingController(text: 'Untitled document');
   quill.QuillController? _quillController = quill.QuillController.basic();
   SocketRepository socketRepository = SocketRepository();
+  ErrorModel? error;
   void dispose() {
     titleController.dispose();
     _quillController?.dispose();
@@ -48,24 +51,32 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
 
   void fetchDocument() async {
     final snackbar = ScaffoldMessenger.of(context);
-    ErrorModel error =
-        await ref.read(documentProvider).getDocumentById(id: widget.id);
-    if (error.isError) {
+    error = await ref.read(documentProvider).getDocumentById(id: widget.id);
+    if (error!.isError) {
       snackbar.showSnackBar(SnackBar(
           content: Text(
-        error.message,
+        error!.message,
       )));
+      return;
     }
-    titleController.text = (error.data as DocumentModel).title;
+    DocumentModel document = error!.data;
+    titleController.text = document.title;
     _quillController = quill.QuillController(
         selection: const TextSelection.collapsed(offset: 0),
-        document: (error.data as DocumentModel).content.isEmpty
+        document: (document).content.isEmpty
             ? quill.Document()
-            : quill.Document.fromDelta(quill.Delta.fromJson(error.data)));
+            : quill.Document.fromDelta(quill.Delta.fromJson(document.content)));
     _quillController?.document.changes.listen((event) {
       if (event.item3 == quill.ChangeSource.LOCAL) {
         Map<String, dynamic> map = {'delta': event.item2, 'roomId': widget.id};
         socketRepository.typing(map);
+        Timer.periodic(const Duration(seconds: 5), (timer) {
+          socketRepository.autoSave(<String, dynamic>{
+            'delta': _quillController!.document.toDelta(),
+            'roomId': widget.id,
+          });
+          print('auto save');
+        });
       }
       print(event);
       print('fsdfs');
@@ -90,7 +101,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_quillController == null) {
+    if (_quillController == null || error == null) {
       return const CircularProgressIndicator();
     }
     return Scaffold(

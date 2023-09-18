@@ -5,6 +5,7 @@ import { router } from './routes.js'
 import cors from 'cors'
 import http from 'http'
 import socket from 'socket.io'
+import { DoumentController } from './controllers/document.controller.js'
 const app = express()
 
 var server = http.createServer(app)
@@ -25,12 +26,12 @@ io.on('connection', socket => {
   console.log('socket connected')
   socket.on('join', roomId => {
     socket.join(roomId)
-    console.log('joined')
   })
   socket.on('typing', data => {
-    console.log('typing');
-    console.log(data);
     socket.broadcast.to(data.roomId).emit('changes', data)
+  })
+  socket.on('save', data => {
+    DoumentController.updateContent(data)
   })
 })
 

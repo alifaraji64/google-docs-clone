@@ -88,7 +88,7 @@ class Auth extends ChangeNotifier {
       );
       if (res.statusCode == 200) {
         final user = User.fromJson(jsonEncode(jsonDecode(res.body)['user']));
-        print(user);
+        updateUserProvider(user);
         error = ErrorModel(isError: false, message: '', data: user);
         return error;
       }

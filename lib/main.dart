@@ -35,10 +35,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   Future<void> getUserData() async {
     try {
       error = await ref.read(authProvider).getUserData();
-      print('message: ' + error.message);
-      if (error.data != null) {
-        ref.read(authProvider).updateUserProvider(error.data);
-      }
     } catch (e) {
       print('bam');
       print(e);
@@ -48,7 +44,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).userProvider;
-    final routes = user == null
+    print("user $user");
+    final routes = (user == null
         ? RouteMap(routes: {
             '/': (route) => const MaterialPage(child: SignInScreen()),
           })
@@ -56,14 +53,11 @@ class _MyAppState extends ConsumerState<MyApp> {
             '/': (route) => const MaterialPage(child: HomeScreen()),
             '/document/:id': (route) => MaterialPage(
                 child: DocumentScreen(id: route.pathParameters['id'] ?? ''))
-          });
+          }));
     print("user $user");
     return MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerDelegate: RoutemasterDelegate(routesBuilder: (context) => routes),
-        routeInformationParser: const RoutemasterParser()
-
-        //home: user == null ? const SignInScreen() : const HomeScreen(),
-        );
+        routeInformationParser: const RoutemasterParser());
   }
 }
